@@ -1,3 +1,5 @@
+// homesのスクレイピング
+
 package main
 
 import (
