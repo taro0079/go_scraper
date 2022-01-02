@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"github.com/PuerkitoBio/goquery"
+	"net/http"
 )
 
 func getPage(url string) *goquery.Document {
@@ -11,6 +11,9 @@ func getPage(url string) *goquery.Document {
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; MAFSJS; rv:11.0) like Gecko")
 	client := new(http.Client)
 	resp, err := client.Do(req)
+	if err != nil {
+		panic("リクエスト作成中にエラー")
+	}
 	defer resp.Body.Close()
 	if err != nil {
 		panic("Getリクエスト中にエラー発生")
@@ -41,13 +44,13 @@ func (s *Scraper) getTitle() string {
 }
 
 // 物件情報のテーブルからスクレイピング
-func (s *Scraper) getDetailTable() map[string]string{
+func (s *Scraper) getDetailTable() map[string]string {
 	selector := "div.mod-bukkenSpecDetail > table"
-	table := s.doc.Find(selector) // 物件詳細テーブルを取得
+	table := s.doc.Find(selector)         // 物件詳細テーブルを取得
 	table_data := make(map[string]string) // rubyでいうHash的なものを作る
 	table.Find("th").Each(func(index int, s *goquery.Selection) {
 		s.Next().Find("div").Remove() // tr内のdivを削除
-		table_data[s.Text()] =  s.Next().Text()
+		table_data[s.Text()] = s.Next().Text()
 	})
 	return table_data
 
